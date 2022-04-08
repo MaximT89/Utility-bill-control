@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.content.res.Resources
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -71,6 +72,43 @@ fun View.animateLikeButton() {
             start()
         }
     }
+}
+
+
+// Удаление элемента по позиции из liveData
+fun <T> removeItem(position: Int, list: MutableLiveData<MutableList<T>?>) {
+    list.value.apply {
+        this?.removeAt(position)
+        list.value = this
+    }
+}
+
+// Переместить элемент вверх в recyclerView (listView)
+fun <T> upItem(position: Int, list: MutableLiveData<MutableList<T>?>) {
+    if (position != 0) {
+        list.value.also {
+            val personTemp = it?.get(position)
+            it?.apply {
+                removeAt(position)
+                add(position.dec(), personTemp!!)
+                list.value = this
+            }
+        }
+    } else list.value
+}
+
+// Переместить элемент вниз в recyclerView (listView)
+fun <T> downItem(position: Int, list: MutableLiveData<MutableList<T>?>) {
+    if (position != list.value?.size?.minus(1)) {
+        list.value.also {
+            val personTemp = it?.get(position)
+            it?.apply {
+                removeAt(position)
+                add(position.inc(), personTemp!!)
+                list.value = this
+            }
+        }
+    } else list.value
 }
 
 fun String.upperFirst() = this.substring(0, 1).uppercase() + this.drop(1)
